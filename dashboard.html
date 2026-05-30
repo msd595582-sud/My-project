@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام إدارة الخدمات</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f7f6; margin: 0; padding: 20px; display: flex; justify-content: center; align-items: center; min-height: 100vh; flex-direction: column; }
+        .container { width: 100%; max-width: 500px; }
+        .card { background: #ffffff; padding: 30px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); text-align: center; margin-bottom: 20px; }
+        h2 { color: #333; margin-bottom: 20px; }
+        p { color: #666; font-size: 14px; }
+        input, select, button { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; font-size: 15px; }
+        button { background-color: #008080; color: white; border: none; cursor: pointer; font-weight: bold; }
+        button:hover { background-color: #005757; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: center; font-size: 14px; }
+        th { background-color: #008080; color: white; }
+        .admin-section { display: none; margin-top: 30px; border-top: 2px dashed #008080; padding-top: 20px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div id="loginCard" class="card">
+        <h2>تسجيل الدخول للنظام</h2>
+        <form id="loginForm">
+            <input type="text" id="username" placeholder="اسم المستخدم" required>
+            <input type="password" id="password" placeholder="كلمة السر" required>
+            <button type="submit">دخول النظام</button>
+        </form>
+    </div>
+
+    <div id="userCard" class="card" style="display: none;">
+        <h2 id="userWelcome">أهلاً بك!</h2>
+        <p>اختر الخدمة المطلوبة والعدد لإرسالها للمشرف:</p>
+        <form id="orderForm">
+            <select id="service" required>
+                <option value="" disabled selected>اختر نوع الخدمة...</option>
+                <option value="متابعين">طلب متابعين جدد</option>
+                <option value="لايكات">طلب تفاعل ولايكات</option>
+                <option value="مشاهدات">طلب زيادة مشاهدات</option>
+            </select>
+            <select id="count" required>
+                <option value="" disabled selected>حدد العدد المطلوبة...</option>
+                <option value="1000">1000</option>
+                <option value="3000">3000</option>
+                <option value="5000">5000</option>
+            </select>
+            <button type="submit">تأكيد وإرسال الطلب</button>
+        </form>
+        <p id="status" style="color: green; font-weight: bold;"></p>
+    </div>
+
+    <div id="adminSection" class="card admin-section">
+        <h2>لوحة إدارة النظام (خاص بالمشرف)</h2>
+        <p>تحديث فوري لكافة الطلبات والأسماء المسجلة:</p>
+        <table>
+            <thead>
+                <tr>
+                    <th>المستخدم</th>
+                    <th>نوع الخدمة</th>
+                    <th>العدد المطلوب</th>
+                </tr>
+            </thead>
+            <tbody id="adminTableBody">
+                </tbody>
+        </table>
+        <button onclick="clearSystemData()" style="background-color: #a04040; margin-top: 15px;">تصفير كافة البيانات</button>
+    </div>
+</div>
+
+<script>
+    // نظام معالجة تسجيل الدخول وحفظ البيانات محلياً
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const userValue = document.getElementById('username').value;
+        localStorage.setItem('sessionUser', userValue);
+        
+        document.getElementById('loginCard').style.display = 'none';
+        document.getElementById('userCard').style.display = 'block';
+        document.getElementById('userWelcome').innerText = `أهلاً بك مجدداً، ${userValue}!`;
+        
+        // إظهار لوحة تحكم المشرف تلقائياً لمراقبة التدفق
+        document.getElementById('adminSection').style.display = 'block';
+        loadAdminData();
+    });
+
+    // معالجة وإضافة الطلبات الجديدة
+    document.getElementById('orderForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const username = localStorage.getItem('sessionUser') || 'زائر';
+        const service = document.getElementById('service').value;
+        const count = document.getElementById('count').value;
+
+        let currentOrders = JSON.parse(localStorage.getItem('systemOrders')) || [];
+        currentOrders.push({ username, service, count });
+        localStorage.setItem('systemOrders', JSON.stringify(currentOrders));
+
+        document.getElementById('status').innerText = 'تم تسجيل وإرسال طلبك بنجاح!';
+        loadAdminData();
+    });
+
+    // جلب وعرض البيانات في جدول الإدارة
+    function loadAdminData() {
+        const orders = JSON.parse(localStorage.getItem('systemOrders')) || [];
+        const tableBody = document.getElementById('adminTableBody');
+        tableBody.innerHTML = '';
+
+        orders.forEach(item => {
+            const row = `<tr>
+                <td><b>${item.username}</b></td>
+                <td>${item.service}</td>
+                <td>${item.count}</td>
+            </tr>`;
+            tableBody.innerHTML += row;
+        });
+    }
+
+    // تصفير وتنظيف النظام
+    function clearSystemData() {
+        localStorage.removeItem('systemOrders');
+        loadAdminData();
+    }
+</script>
+
+</body>
+</html>
