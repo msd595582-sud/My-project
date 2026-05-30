@@ -4,7 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>مرحباً بك</title>
-    <link rel="stylesheet" href="style.css">
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f7f6; margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; }
+        .container { width: 100%; max-width: 400px; padding: 20px; }
+        .card { background: #ffffff; padding: 30px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); text-align: center; }
+        h2 { color: #333; margin-bottom: 20px; }
+        p { color: #666; font-size: 14px; }
+        input, button { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; font-size: 15px; }
+        button { background-color: #008080; color: white; border: none; cursor: pointer; font-weight: bold; }
+        button:hover { background-color: #005757; }
+    </style>
 </head>
 <body>
     <div class="container">
@@ -13,7 +22,7 @@
             <p>من فضلك أدخل اسمك لتخصيص تجربتك:</p>
             <form id="welcomeForm">
                 <input type="text" id="clientName" placeholder="اكتب اسمك هنا..." required>
-                <button type="submit">المتابعة لتسجيل الدخول</button>
+                <button type="submit">المتابعة لصفحة الخدمات</button>
             </form>
         </div>
     </div>
@@ -21,7 +30,8 @@
         document.getElementById('welcomeForm').addEventListener('submit', function(e) {
             e.preventDefault();
             localStorage.setItem('visitorName', document.getElementById('clientName').value);
-            window.location.href = 'login.html';
+            // التوجيه الصحيح مباشرة إلى صفحة الخدمات
+            window.location.href = 'dashboard.html';
         });
     </script>
 </body>
